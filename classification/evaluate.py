@@ -63,10 +63,15 @@ def evaluate(args, device, model, data_set, data_loader):
             # calculate per-class accuracy
             _, predicted = torch.max(outputs.data, 1)
             c = (predicted == labels).squeeze()
-            for i in range(len(labels)):
-                label = labels[i]
-                class_correct[label] += c[i].item()
-                class_total[label] += 1
+            if c.ndim == 0:
+                print(images.size())
+                class_correct[labels[0]] += c.item()
+                class_total[labels[0]] += 1
+            else:
+                for i in range(len(labels)):
+                    label = labels[i]
+                    class_correct[label] += c[i].item()
+                    class_total[label] += 1
 
         # compute epoch accuracy in percentages
         curr_top1_acc = 100 * correct_1/total
@@ -75,7 +80,7 @@ def evaluate(args, device, model, data_set, data_loader):
         f.write(curr_line)
 
         curr_top5_acc = 100 * correct_5/total
-        curr_line = 'Val/Test Top-1 Accuracy of the model on the test images: {:.4f} %\n'.format(curr_top1_acc)
+        curr_line = 'Val/Test Top-1 Accuracy of the model on the test images: {:.4f} %\n'.format(curr_top5_acc)
         print(curr_line)
         f.write(curr_line)
 
