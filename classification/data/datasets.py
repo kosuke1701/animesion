@@ -4,7 +4,57 @@ from PIL import Image
 
 import torch
 import torch.utils.data as data
+from torch.utils.data.dataset import Subset
 from torchvision import transforms
+from torchvision.datasets import ImageFolder
+from sklearn.model_selection import train_test_split
+
+class ZACI20(data.Dataset):
+	def __init__(self, dataset_dir, input_size=224, split='train', transform=None, seed=1234):
+		self.split = split
+		if self.split=='train':
+			if transform is None:
+				transform = transforms.Compose([
+					transforms.Resize((input_size+32, input_size+32)),
+					transforms.RandomCrop((input_size, input_size)),
+					transforms.RandomHorizontalFlip(),
+					transforms.ColorJitter(brightness=0.1, 
+					contrast=0.1, saturation=0.1, hue=0.1),
+					transforms.ToTensor(),
+					transforms.Normalize(mean=[0.5, 0.5, 0.5],
+										std=[0.5, 0.5, 0.5])
+				])
+		elif self.split=='val' or self.split=='test':
+			if transform is None:
+				transform = transforms.Compose([
+					transforms.Resize((input_size, input_size)), 
+					transforms.ToTensor(),
+					transforms.Normalize(mean=[0.5, 0.5, 0.5],
+									std=[0.5, 0.5, 0.5])
+				])	
+
+		self.base = ImageFolder(dataset_dir, transform=transform)
+		self.no_classes = len(self.base.classes)
+		self.classes = self.base.classes
+
+		index = list(range(len(self.base)))
+		train_index, dev_index = train_test_split(index, test_size=0.2, shuffle=True, random_state=seed)
+		dev_index, test_index = train_test_split(dev_index, test_size=0.5, shuffle=False)
+
+		if self.split == "train":
+			self.base = Subset(self.base, train_index)
+		elif self.split == "val":
+			self.base = Subset(self.base, dev_index)
+		elif self.split == "test":
+			self.base = Subset(self.base, test_index)
+			
+		
+	
+	def __getitem__(self, idx):
+		return self.base[idx]
+	
+	def __len__(self):
+		return len(self.base)
 
 class moeImouto(data.Dataset):
 	'''

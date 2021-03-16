@@ -65,6 +65,10 @@ def data_loading(args, split):
     elif args.dataset_name == 'cartoonFace':
         dataset = datasets.cartoonFace(root=args.dataset_path,
         input_size=args.image_size, split=split, transform=transform)    
+    elif args.dataset_name == "ZACI20":
+        dataset = datasets.ZACI20(
+            args.dataset_path, input_size=args.image_size, split=split, transform=transform
+        )
     
     dataset_loader = data.DataLoader(dataset, batch_size=args.batch_size, 
         shuffle=True, num_workers=4)
@@ -253,7 +257,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--name", required=True,
                         help="Name of this run. Used for monitoring.")
-    parser.add_argument("--dataset_name", choices=["moeImouto", "danbooruFaces", "cartoonFace"], 
+    parser.add_argument("--dataset_name", choices=["moeImouto", "danbooruFaces", "cartoonFace", "ZACI20"], 
                         default="moeImouto", help="Which dataset to use.")
     parser.add_argument("--dataset_path", required=True,
                         help="Path for the dataset.")

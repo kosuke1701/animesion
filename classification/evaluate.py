@@ -93,8 +93,8 @@ def evaluate(args, device, model, data_set, data_loader):
 def main():
   
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset_name", choices=["moeImouto", "danbooruFaces"], default='danbooruFaces',
-                        help="Which dataset to use (for no. of classes/loading model).")
+    parser.add_argument("--dataset_name", choices=["moeImouto", "danbooruFaces", "cartoonFace", "ZACI20"], 
+                        default="moeImouto", help="Which dataset to use.")
     parser.add_argument("--dataset_path", 
                         default="/home2/yan/disk/edwin/personal/data/Danbooru2018AnimeCharacterRecognitionDataset_Revamped/",
                         help="Path for the dataset.")
